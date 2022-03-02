@@ -63,7 +63,7 @@ app.get('/api/department/:id', (req, res) => {
   });
 });
 
-// DELETE a department
+// DELETE a departments
 app.delete('/api/department/:id', (req, res) => {
   const sql = `DELETE FROM department WHERE id = ?`;
   const params = [req.params.id];
@@ -161,6 +161,94 @@ app.delete('/api/role/:id', (req, res) => {
     }
   });
 });
+
+// Get all employees
+app.get('/api/employee', (req, res) => {
+  const sql = `SELECT * FROM employee`;
+  db.query(sql, (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({
+      message: 'success',
+      data: rows
+    });
+  });
+});
+
+// GET a single employee
+app.get('/api/employee/:id', (req, res) => {
+  const sql = `SELECT * FROM employee WHERE id = ?`;
+  const params = [req.params.id];
+
+  db.query(sql, params, (err, row) => {
+    if (err) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
+    res.json({
+      message: 'success',
+      data: row
+    });
+  });
+});
+
+// DELETE an employee
+app.delete('/api/employee/:id', (req, res) => {
+  const sql = `DELETE FROM employee WHERE id = ?`;
+  const params = [req.params.id];
+
+  db.query(sql, params, (err, result) => {
+    if (err) {
+      res.status(400).json({ error: res.message });
+      // checks if anything was deleted
+    } else if (!result.affectedRows) {
+      res.json({
+        message: 'Employee not found'
+      });
+    } else {
+      res.json({
+        message: 'deleted',
+        changes: result.affectedRows,
+        id: req.params.id
+      });
+    }
+  });
+});
+
+// Update an employee's role
+app.put('/api/employee/:id', (req, res) => {
+  const errors = inputCheck(req.body, 'role_id');
+
+  if (errors) {
+    res.status(400).json({ error: errors });
+    return;
+  }
+  const sql = `UPDATE employee SET role_id = ?
+                WHERE id = ?`;
+  const params = [req.body.role_id, req.params.id];
+
+  db.query(sql, params, (err, result) => {
+    if (err) {
+      res.status(400).json({ error: err.message });
+      // check if a record is found
+    } else if (!result.affectedRows) {
+      res.json({
+        message: 'Employee not found'
+      });
+    } else {
+      res.json({
+        message: 'success',
+        data: req.body,
+        changes: result.affectedRows
+      });
+    }
+  });
+});
+
+
+
 
 // Default response for any other request (Not Found)
 app.use((req, res) => {

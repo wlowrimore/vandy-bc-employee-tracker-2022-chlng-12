@@ -19,3 +19,14 @@ VALUES
   ('Luthier', 72000, 6),
   ('Instructor', 25000, 5),
   ('Associate', 32000, 8);
+
+INSERT INTO employee (first_name, last_name, manager_id)
+VALUES
+  ('John', 'Lovelace', 10),
+  ('Daniel', 'Lawrence', 9),
+  ('David', 'Flannigan', 8),
+  ('Brent', 'Woolridge', 7),
+  ('Michael', 'Grant', 6),
+  ('Roberto', 'Solarez', 5),
+  ('Joseph', 'Restrado', 4),
+  ('Todd', 'Seynour', 3);
