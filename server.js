@@ -1,6 +1,7 @@
 const db = require('./db/connection');
 const express = require('express');
 const apiRoutes = require('./routes/apiRoutes');
+const inquirer = require('inquirer');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -20,3 +21,5 @@ app.use((req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+// Prompted Questions
