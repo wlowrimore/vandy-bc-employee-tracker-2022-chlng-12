@@ -23,6 +23,7 @@ CREATE TABLE employee (
   role_id INTEGER,
   CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE SET NULL,
   manager_id INTEGER,
+  INDEX manager_ind (manager_id),
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 

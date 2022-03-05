@@ -4,7 +4,7 @@ const db = require('../../db/connection');
 const inputCheck = require('../../utils/inputCheck');
 
 // Get all employees
-viewAllEmployees = async () => {
+const viewAllEmployees = async () => {
   router.get('/employee', (req, res) => {
     const sql = `SELECT * FROM employee`;
     db.query(sql, (err, rows) => {
