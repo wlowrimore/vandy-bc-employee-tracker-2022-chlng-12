@@ -4,11 +4,9 @@ const cTable = require('console.table');
 const db = require('./db/connection');
 const apiRoutes = require('./routes/apiRoutes');
 const inquirer = require('inquirer');
-require('dotenv').config()
 
 const PORT = process.env.PORT || 3001;
 const app = express();
-
 
 // Express Middleware
 app.use(express.urlencoded({ extended: false }));
@@ -37,7 +35,7 @@ console.log('+++++++++++++++++++++++++++++++++++++++++');
 console.log('WELCOME TO THE EMPLOYEE TRACKER DATABASE!');
 console.log('+++++++++++++++++++++++++++++++++++++++++');
 
-
+// Prompts the Questions
 const startQs = () => {
   inquirer.prompt ([
     {
@@ -82,7 +80,7 @@ const startQs = () => {
         addNewEmployee();
       }
 
-      if (choice === "Update an Existing Employee") {
+      if (choice === "Update an Existing Employee's Role") {
         updateEmployee();
       }
 
@@ -127,7 +125,8 @@ const startQs = () => {
       // }
 
       if (choice === "Exit") {
-        // terminate connection goes here
+        console.log("|---- GOOD-BYE! ----|"); 
+        db.end()
       }
     })
 
@@ -347,6 +346,63 @@ const startQs = () => {
         });
       });
     };
+
+    updateEmployee = () => {
+      const sql = `SELECT * FROM employee`;
+      db.query(sql, (err, data) => {
+        if (err) throw err;
+
+        const employee = data.map(({ id, first_name, last_name }) => ({ name: first_name + ' ' + last_name, value: id }));
+
+        inquirer.prompt([
+          {
+            type: 'list',
+            name: 'name',
+            message: "Which of the following employees would you like to update?",
+            choices: employee
+          }
+        ])
+        .then(empChoice => {
+          const employee = empChoice.name;
+          const params = [];
+          params.push(employee);
+
+          const sql = `SELECT * FROM role`;
+
+          db.query(sql, (err, data) => {
+            if (err) throw err;
+
+            const roles = data.map(({ id, title }) => ({ name: title, value: id }));
+
+            inquirer.prompt([
+              {
+                type: 'list',
+                name: 'role',
+                message: "What is the new role for this employee?",
+                choices: roles
+              }
+            ])
+            .then(roleChoice => {
+              const role = roleChoice.role;
+              params.push(role);
+
+              let employee = params[0];
+              params[0] = role
+              params[1] = employee
+
+              const sql = `UPDATE employee SET role_id = ? WHERE id = ?`;
+
+              db.query(sql, params, (err, result) => {
+                if (err) throw err;
+                console.log("You Have Successfully Updated This Employee's Role");
+
+                viewAllEmployees();
+              })
+            })
+          })
+        })
+      })
+    } 
   }     
     
 // Initialize application
