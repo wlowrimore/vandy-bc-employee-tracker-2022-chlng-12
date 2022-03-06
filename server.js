@@ -49,7 +49,9 @@ const startQs = () => {
         "Add a New Department",
         "Add a New Role",
         "Add a New Employee",
-        "Update an Existing Employee",
+        "Update an Employee's Role",
+        "Update an Employee's Manager",
+        "Delete a Department",
         "Exit"]
     }
   ])
@@ -80,9 +82,18 @@ const startQs = () => {
         addNewEmployee();
       }
 
-      if (choice === "Update an Existing Employee's Role") {
+      if (choice === "Update an Employee's Role") {
         updateEmployee();
       }
+
+      if (choice === "Update an Employee's Manager") {
+        updateManager();
+      }
+
+      if (choice === "View Employee by Department") {
+        viewByDept();
+      }
+      
 
       // if (choice === "View a Single Department") {
       //   viewSingDept();
@@ -92,9 +103,9 @@ const startQs = () => {
       //   createDept();
       // }
 
-      // if (choice === "Delete a Department") {
-      //   deleteDept();
-      // }
+      if (choice === "Delete a Department") {
+        deleteDept();
+      }
 
       
 
@@ -108,16 +119,10 @@ const startQs = () => {
 
       // if (choice === "Delete a Role") {
       //   deleteRole();
-      // }
-
-      
+      // }      
 
       // if (choice === "View a Single Employee") {
       //   viewSingEmployee();
-      // }
-
-      // if (choice === "Update an Employee's Role") {
-      //   updateEmployeeRole();
       // }
 
       // if (choice === "Delete an Employee") {
@@ -402,7 +407,100 @@ const startQs = () => {
           })
         })
       })
-    } 
+    }
+    
+    updateManager = () => {
+      const sql = `SELECT * FROM employee`;
+
+      db.query(sql, (err, data) => {
+        if (err) throw err;
+
+        const employees = data.map(({ id, first_name, last_name }) => ({ name: first_name + ' ' + last_name, value: id }));
+
+        inquirer.prompt([
+          {
+            type: 'list',
+            name: 'name',
+            message: "Which employee would you like to update?",
+            choices: employees
+          }
+        ])
+        .then(empChoice => {
+          const employee = empChoice.name;
+          const params = [];
+          params.push(employee);
+
+          const sql = `SELECT * FROM employee`;
+
+          db.query(sql, (err, data) => {
+            if (err) throw err;
+
+            const managers = data.map(({ id, first_name, last_name }) => ({ name: first_name + ' ' + last_name, value: id }));
+
+            inquirer.prompt([
+              {
+                type: 'list',
+                name: 'manager',
+                message: "Who is the employee's new manager?",
+                choices: managers
+              }
+            ])
+            .then(managerChoice => {
+              const manager = managerChoice.manager;
+              params.push(manager);
+
+              let employee = params[0]
+              params[0] = manager
+              params[1] = employee
+
+              const sql = `UPDATE employee SET manager_id = ? WHERE id = ?`;
+
+              db.query(sql, params, (err, result) => {
+                if (err) throw err;
+                console.log("You Have Successfully Updated Employee's Manager!");
+
+                viewAllEmployees();
+              });
+            });
+          });
+        });
+      });
+    };
+
+    deleteDept = () => {
+      const departments = [];
+      db.query("SELECT * FROM department", (err, res) => {
+        if (err) throw err;
+
+        res.forEach(dep => {
+          let qObj = {
+            name: dep.name,
+            value: dep.id
+          }
+          departments.push(qObj);
+        });
+
+        let questions = [
+          {
+            type: "list",
+            name: "name",
+            choices: departments,
+            message: "Which department would you like to delete?"
+          }
+        ];
+
+        inquirer.prompt(questions)
+        .then(response => {
+          const query = `DELETE FROM department WHERE id = ?`;
+          db.query(query, [response.id], (err, res) => {
+            if (err) throw err;
+            console.log(`You've Successfully Deleted ${res.affectedRows}!`);
+            viewAllDepts();
+          })
+        })
+      })
+    }
+    
   }     
     
 // Initialize application
