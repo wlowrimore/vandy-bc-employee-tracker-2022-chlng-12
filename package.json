@@ -1,0 +1,31 @@
+{
+  "name": "vandy-bc-employee-tracker-2022-chlng-12",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wlowrimore/vandy-bc-employee-tracker-2022-chlng-12.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wlowrimore/vandy-bc-employee-tracker-2022-chlng-12/issues"
+  },
+  "homepage": "https://github.com/wlowrimore/vandy-bc-employee-tracker-2022-chlng-12#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "inquirer": "^8.2.0",
+    "mysql2": "^2.3.3"
+  },
+  "devDependencies": {
+    "jest": "^27.5.1"
+  }
+}
